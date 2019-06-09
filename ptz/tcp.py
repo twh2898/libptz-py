@@ -34,17 +34,17 @@ class PTZ:
 
     def zoom_tele(self, speed=3):
         if speed < 0 or speed > 7:
-            raise PTZException('Invalid Speed')
+            raise PTZError('Invalid Speed')
         self._send([0x01, 0x04, 0x07, 0x20 + speed, 0xFF])
 
     def zoom_wide(self, speed=3):
         if speed < 0 or speed > 7:
-            raise PTZException('Invalid Speed')
+            raise PTZError('Invalid Speed')
         self._send([0x01, 0x04, 0x07, 0x30 + speed, 0xFF])
 
     def zoom_direct(self, position):
         if position < 0 or position > 0xFF:
-            raise PTZException('Invalid Position')
+            raise PTZError('Invalid Position')
 
         p = position
         self._send([0x01, 0x04, 0x47, _word(p, 3), _word(
@@ -55,12 +55,12 @@ class PTZ:
 
     def focus_far(self, speed=3):
         if speed < 0 or speed > 7:
-            raise PTZException('Invalid Speed')
+            raise PTZError('Invalid Speed')
         self._send([0x01, 0x04, 0x08, 0x20 + speed, 0xFF])
 
     def focus_near(self, speed=3):
         if speed < 0 or speed > 7:
-            raise PTZException('Invalid Speed')
+            raise PTZError('Invalid Speed')
         self._send([0x01, 0x04, 0x08, 0x30 + speed, 0xFF])
 
     def focus_af_auto(self):
