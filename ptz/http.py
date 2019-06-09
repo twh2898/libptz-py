@@ -1,5 +1,6 @@
 
 from . import PTZError
+import logging
 from urllib.request import urlopen
 from collections import namedtuple
 
@@ -69,10 +70,9 @@ class PTZ:
     def _send(self, *args):
         command = '&'.join(['ptzcmd'] + list(args))
         request = PTZ_URL.format(addr=self.addr, cmd=command)
-        # print(request)
+        logging.info(request)
         response = urlopen(request)
-        # for line in response:
-        #     print(line)
+        logging.debug(response)
 
     def move(self, direction, pan_speed=1, tilt_speed=1):
         _ensure_direction(direction, _move_commands)
