@@ -15,6 +15,7 @@ class PTZ:
     def __init__(self, addr='192.168.1.15', port=5678):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((addr, port))
+        self.a = 0
 
     def __enter__(self):
         return self
@@ -77,5 +78,5 @@ class PTZ:
             raise 'Invalid Position'
 
         f = focus
-        self._send([0x01, 0x04, 0x48, _word(f, 3), word(
+        self._send([0x01, 0x04, 0x48, _word(f, 3), _word(
             f, 2), _word(f, 1), _word(f, 0), 0xFF])
