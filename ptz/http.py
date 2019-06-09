@@ -11,41 +11,30 @@ from urllib.request import urlopen
 PTZ_URL = 'http://{addr}/cgi-bin/ptzctrl.cgi?{cmd}'
 
 
-PAN_SPEED = SpeedRange('pan_speed', 1, 24)
-TILT_SPEED = SpeedRange('tilt_speed', 1, 20)
+PAN_SPEED = Range('pan_speed', 1, 24)
+TILT_SPEED = Range('tilt_speed', 1, 20)
 PAN_LEFT = 'left'
 PAN_RIGHT = 'right'
 TILT_UP = 'up'
 TILT_DOWN = 'down'
 PAN_TILT_STOP = 'ptzstop'
-_move_commands = [PAN_LEFT, PAN_RIGHT, TILT_UP, TILT_DOWN]
+_move_commands = Options('Move', [PAN_LEFT, PAN_RIGHT, TILT_UP, TILT_DOWN])
 
-ZOOM_SPEED = SpeedRange('zoom_speed', 1, 7)
+ZOOM_SPEED = Range('zoom_speed', 1, 7)
 ZOOM_IN = 'zoomin'
 ZOOM_OUT = 'zoomout'
 ZOOM_STOP = 'zoomstop'
-_zoom_commands = [ZOOM_IN, ZOOM_OUT]
+_zoom_commands = Options('Zoom', [ZOOM_IN, ZOOM_OUT])
 
-FOCUS_SPEED = SpeedRange('focus_speed', 1, 7)
+FOCUS_SPEED = Range('focus_speed', 1, 7)
 FOCUS_IN = 'focusin'
 FOCUS_OUT = 'focusout'
 FOCUS_STOP = 'focusstop'
-_focus_commands = [FOCUS_IN, FOCUS_OUT]
+_focus_commands = Options('focus', [FOCUS_IN, FOCUS_OUT])
 
-PRESET_MIN = 0
-PRESET_MAX = 89
+PRESET_RANGE = Range('preset_num', 0, 89)
 PRESET_CALL_COMMAND = 'poscall'
 PRESET_SET_COMMAND = 'posset'
-
-
-def _ensure_direction(value, options):
-    if not value in options:
-        raise PTZCommandError('direction', options)
-
-
-def _ensure_speed_range(value, speed_range):
-    if not speed_range.min <= value <= speed_range.max:
-        raise PTZSpeedError(speed_range)
 
 
 class PTZ:
@@ -60,32 +49,30 @@ class PTZ:
         logging.debug(response)
 
     def move(self, direction, pan_speed=1, tilt_speed=1):
-        _ensure_direction(direction, _move_commands)
-        _ensure_speed_range(pan_speed, PAN_SPEED)
-        _ensure_speed_range(tilt_speed, TILT_SPEED)
+        ensure_options(direction, _move_commands)
+        ensure_range(pan_speed, PAN_SPEED)
+        ensure_range(tilt_speed, TILT_SPEED)
         self._send(direction, str(pan_speed), str(tilt_speed))
-    
+
     def move_stop(self):
         self._send(PAN_TILT_STOP, '1', '1')
 
     def zoom(self, direction, zoom_speed=1):
-        _ensure_direction(direction, _zoom_commands)
-        _ensure_speed_range(zoom_speed, ZOOM_SPEED)
+        ensure_options(direction, _zoom_commands)
+        ensure_range(zoom_speed, ZOOM_SPEED)
         self._send(direction, str(zoom_speed))
-    
+
     def zoom_stop(self):
         self._send(ZOOM_STOP, '1')
 
     def focus(self, direction, focus_speed=1):
-        _ensure_direction(direction, _focus_commands)
-        _ensure_speed_range(focus_speed, FOCUS_SPEED)
+        ensure_options(direction, _focus_commands)
+        ensure_range(focus_speed, FOCUS_SPEED)
         self._send(direction, str(focus_speed))
-    
+
     def focus_stop(self):
         self._send(FOCUS_STOP, '1')
 
     def preset(self, preset):
-        if not PRESET_MIN <= preset <= PRESET_MAX:
-            raise PTZError('preset must be in the range [{}, {}]'.format(
-                PRESET_MIN, PRESET_MAX))
+        ensure_range(preset, PRESET_RANGE)
         self._send(PRESET_CALL_COMMAND, str(preset))
