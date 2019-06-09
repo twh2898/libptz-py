@@ -19,19 +19,19 @@ PAN_RIGHT = 'right'
 TILT_UP = 'up'
 TILT_DOWN = 'down'
 PAN_TILT_STOP = 'ptzstop'
-_move_commands = [PAN_LEFT, PAN_RIGHT, TILT_UP, TILT_DOWN, PAN_TILT_STOP]
+_move_commands = [PAN_LEFT, PAN_RIGHT, TILT_UP, TILT_DOWN]
 
 ZOOM_SPEED = SpeedRange('zoom_speed', 1, 7)
 ZOOM_IN = 'zoomin'
 ZOOM_OUT = 'zoomout'
 ZOOM_STOP = 'zoomstop'
-_zoom_commands = [ZOOM_IN, ZOOM_OUT, ZOOM_STOP]
+_zoom_commands = [ZOOM_IN, ZOOM_OUT]
 
 FOCUS_SPEED = SpeedRange('focus_speed', 1, 7)
 FOCUS_IN = 'focusin'
 FOCUS_OUT = 'focusout'
 FOCUS_STOP = 'focusstop'
-_focus_commands = [FOCUS_IN, FOCUS_OUT, FOCUS_STOP]
+_focus_commands = [FOCUS_IN, FOCUS_OUT]
 
 PRESET_MIN = 0
 PRESET_MAX = 89
@@ -79,16 +79,25 @@ class PTZ:
         _ensure_speed_range(pan_speed, PAN_SPEED)
         _ensure_speed_range(tilt_speed, TILT_SPEED)
         self._send(direction, str(pan_speed), str(tilt_speed))
+    
+    def move_stop(self):
+        self._send(PAN_TILT_STOP, '1', '1')
 
     def zoom(self, direction, zoom_speed=1):
         _ensure_direction(direction, _zoom_commands)
         _ensure_speed_range(zoom_speed, ZOOM_SPEED)
         self._send(direction, str(zoom_speed))
+    
+    def zoom_stop(self):
+        self._send(ZOOM_STOP, '1')
 
-    def focus(self, direction, focus_speed):
+    def focus(self, direction, focus_speed=1):
         _ensure_direction(direction, _focus_commands)
         _ensure_speed_range(focus_speed, FOCUS_SPEED)
         self._send(direction, str(focus_speed))
+    
+    def focus_stop(self):
+        self._send(FOCUS_STOP, '1')
 
     def preset(self, preset):
         if not PRESET_MIN <= preset <= PRESET_MAX:
