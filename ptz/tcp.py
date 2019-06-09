@@ -13,7 +13,7 @@ def _word(n, w):
 
 class PTZ:
     def __init__(self, addr='192.168.1.15', port=5678):
-        self.s = socket.socket(socekt.AF_INET, socket.SOCK_STREAM)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((addr, port))
 
     def __enter__(self):
