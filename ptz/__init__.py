@@ -1,0 +1,3 @@
+
+class PTZError(Exception):
+    pass
