@@ -1,8 +1,7 @@
 
-from . import PTZError
+from . import *
 import logging
 from urllib.request import urlopen
-from collections import namedtuple
 
 
 # API reference
@@ -11,7 +10,6 @@ from collections import namedtuple
 
 PTZ_URL = 'http://{addr}/cgi-bin/ptzctrl.cgi?{cmd}'
 
-SpeedRange = namedtuple('SpeedRange', ['name', 'min', 'max'])
 
 PAN_SPEED = SpeedRange('pan_speed', 1, 24)
 TILT_SPEED = SpeedRange('tilt_speed', 1, 20)
@@ -38,19 +36,6 @@ PRESET_MIN = 0
 PRESET_MAX = 89
 PRESET_CALL_COMMAND = 'poscall'
 PRESET_SET_COMMAND = 'posset'
-
-
-class PTZCommandError(PTZError):
-    def __init__(self, name, options):
-        msg = '{} must be one of {}'.format(name, ','.join(options))
-        PTZError.__init__(self, msg)
-
-
-class PTZSpeedError(PTZError):
-    def __init__(self, speed_range):
-        msg = '{} must be in the range [{}, {}]'.format(
-            speed_range.name, speed_range.min, speed_range.max)
-        PTZError.__init__(self, msg)
 
 
 def _ensure_direction(value, options):
