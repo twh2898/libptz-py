@@ -98,6 +98,9 @@ class PTZ:
 
     ### PAN/TILT ###
 
+    def move_stop(self):
+        self._send([0x06, 0x01, 0x01, 0x01, 0x03, 0x03])
+
     def move(self, pan_speed=0, tilt_speed=0):
         '''
         pan_speed: speed from -0x18 to 0x18 with 0 being stop,
