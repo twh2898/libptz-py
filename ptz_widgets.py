@@ -1,28 +1,21 @@
-#!/usr/bin/env python3
 
 from __future__ import print_function
-try:
-    from tkinter import *
-    from tkinter import ttk
-except ImportError:
-    from Tkinter import *
-    from Tkinter import ttk
+import tkinter as tk
+from tkinter import ttk
 import ptz_http
-
-# https://ptzoptics.com/wp-content/uploads/2014/09/PTZOptics_TCP_UDP_CGI_Control-1.pdf
 
 
 class Spinbox(ttk.Entry):
     def __init__(self, master=None, **kw):
-        ttk.Entry.__init__(self, master, "ttk::spinbox", **kw)
+        super().__init__(master, "ttk::spinbox", **kw)
 
     def set(self, value):
         self.tk.call(self._w, "set", value)
 
-        
-class PanWidget(Frame):
+
+class PanWidget(ttk.Frame):
     def __init__(self, master):
-        Frame.__init__(self, master)
+        super().__init__(master)
 
         buttons = [
             ('Up', 0, 1, self.tilt_u_start),
@@ -30,16 +23,16 @@ class PanWidget(Frame):
             ('Left', 1, 0, self.pan_l_start),
             ('Right', 1, 2, self.pan_r_start),
             ('Stop', 1, 1, self.stop)
-            ]
+        ]
 
         for text, r, c, action in buttons:
-            b = Button(self, text=text)
+            b = ttk.Button(self, text=text)
             b.grid(row=r, column=c)
             b.bind("<ButtonPress>", action)
             b.bind("<ButtonRelease>", self.stop)
 
-        Label(self, text='Pan:').grid(row=3, column=0)
-        Label(self, text='Tilt:').grid(row=4, column=0)
+        ttk.Label(self, text='Pan:').grid(row=3, column=0)
+        ttk.Label(self, text='Tilt:').grid(row=4, column=0)
 
         self.pan_speed = Spinbox(self, from_=1, to=24)
         self.pan_speed.grid(row=3, column=1, columnspan=2)
@@ -50,25 +43,27 @@ class PanWidget(Frame):
 
     def stop(self, e):
         ptz_http.move('ptzstop')
-        
+
     def pan_l_start(self, e):
         pan_speed = int(self.pan_speed.get())
         ptz_http.move('left', pan_speed=pan_speed)
+
     def pan_r_start(self, e):
         pan_speed = int(self.pan_speed.get())
         ptz_http.move('right', pan_speed=pan_speed)
-        
+
     def tilt_u_start(self, e):
         tilt_speed = int(self.tilt_speed.get())
         ptz_http.move('up', tilt_speed=tilt_speed)
+
     def tilt_d_start(self, e):
         tilt_speed = int(self.tilt_speed.get())
         ptz_http.move('down', tilt_speed=tilt_speed)
 
 
-class PresetsWidget(Frame):
+class PresetsWidget(ttk.Frame):
     def __init__(self, master):
-        Frame.__init__(self, master)
+        super().__init__(master)
 
         self.buttons = []
         presets = [
@@ -82,12 +77,10 @@ class PresetsWidget(Frame):
         ]
         for i, name in presets:
             text = '{} - {}'.format(i, name)
-            command = lambda i=i: self.locate(i)
-            button = Button(self, text=text, command=command)
-            button.pack(fill=X, expand=True)
+            def command(i=i): return self.locate(i)
+            button = ttk.Button(self, text=text, command=command)
+            button.pack(fill='x', expand=True)
             self.buttons.append(button)
 
     def locate(self, preset):
         ptz_http.preset(preset)
-
-
